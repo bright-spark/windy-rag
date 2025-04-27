@@ -1,7 +1,10 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type NextAuthOptions } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import { prisma } from "./prisma";
+import { prisma } from "./prisma"; // Use the singleton instance
+import EmailProvider from "next-auth/providers/email"; // Import EmailProvider
+
+// Removed unused PrismaClient instance
 
 export const authOptions: NextAuthOptions = {
   // Use Prisma adapter with Neon compatibility
@@ -10,7 +13,13 @@ export const authOptions: NextAuthOptions = {
   // If specific Neon features are needed later, we can switch.
   adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
-    // Add authentication providers here (e.g., Google, GitHub, Email)
+    // Add the Email provider
+    EmailProvider({
+        server: process.env.EMAIL_SERVER,
+        from: process.env.EMAIL_FROM,
+        // maxAge: 24 * 60 * 60, // Optional: How long email links are valid for (default 24h)
+    }),
+    // Add authentication providers here (e.g., Google, GitHub)
     // Example (install @auth/core and providers like google-provider):
     // import GoogleProvider from "next-auth/providers/google";
     // GoogleProvider({
